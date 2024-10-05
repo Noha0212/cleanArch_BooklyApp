@@ -34,6 +34,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
     for (var bookMap in data['items']) {
       books.add(BookModel.fromJson(bookMap));
     }
+    saveBooksData(books, kNewestBox);
     return books;
   }
 }
