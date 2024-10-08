@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bookly/Features/home/domain/entities/book_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,6 +19,7 @@ class FeaturedBooksListView extends StatefulWidget {
 class _FeaturedBooksListViewState extends State<FeaturedBooksListView> {
   late ScrollController _scrollController;
   late int nextPage = 1;
+  late var isLoading = false;
 
   @override
   void initState() {
@@ -25,14 +27,20 @@ class _FeaturedBooksListViewState extends State<FeaturedBooksListView> {
     _scrollController = ScrollController();
 
     // Add listener to the scroll controller
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent * 0.7) {
-        // Trigger fetch when scroll position reaches 70% of the total scroll length
-        BlocProvider.of<FeaturedBooksCubit>(context)
+    _scrollController.addListener(scrollListener);
+  }
+
+  void scrollListener() async {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.7) {
+      // Trigger fetch when scroll position reaches 70% of the total scroll length
+      if (!isLoading) {
+        isLoading = true;
+        await BlocProvider.of<FeaturedBooksCubit>(context)
             .fetchFeaturedBooks(pageNumber: nextPage++);
+        isLoading = false;
       }
-    });
+    }
   }
 
   @override
@@ -41,22 +49,29 @@ class _FeaturedBooksListViewState extends State<FeaturedBooksListView> {
     super.dispose();
   }
 
+  List<BookEntity> books = [];
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FeaturedBooksCubit, FeaturedBooksState>(
-      builder: (context, state) {
+    return BlocConsumer<FeaturedBooksCubit, FeaturedBooksState>(
+      listener: (context, state) {
         if (state is FeaturedBooksSuccess) {
+          books.addAll(state.books);
+        }
+      },
+      builder: (context, state) {
+        if (state is FeaturedBooksSuccess ||
+            state is FeaturedBooksPaginationLoading) {
           return SizedBox(
             height: MediaQuery.of(context).size.height * .3,
             child: ListView.builder(
                 controller: _scrollController,
                 scrollDirection: Axis.horizontal,
-                itemCount: state.books.length,
+                itemCount: books.length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: CustomBookImage(
-                      image: state.books[index].image ?? '',
+                      image: books[index].image ?? '',
                     ),
                   );
                 }),
