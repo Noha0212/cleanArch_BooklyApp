@@ -21,3 +21,11 @@ class FeaturedBooksFailure extends FeaturedBooksState {
     this.errMessag,
   );
 }
+
+class FeaturedBooksPaginationFailure extends FeaturedBooksState {
+  final String errMessag;
+
+  FeaturedBooksPaginationFailure(
+    this.errMessag,
+  );
+}

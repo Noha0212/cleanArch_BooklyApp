@@ -57,10 +57,23 @@ class _FeaturedBooksListViewState extends State<FeaturedBooksListView> {
         if (state is FeaturedBooksSuccess) {
           books.addAll(state.books);
         }
+        if (state is FeaturedBooksPaginationFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(
+                state.errMessag,
+                style: const TextStyle(color: Colors.white),
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
       },
       builder: (context, state) {
         if (state is FeaturedBooksSuccess ||
-            state is FeaturedBooksPaginationLoading) {
+            state is FeaturedBooksPaginationLoading ||
+            state is FeaturedBooksPaginationFailure) {
           return SizedBox(
             height: MediaQuery.of(context).size.height * .3,
             child: ListView.builder(
