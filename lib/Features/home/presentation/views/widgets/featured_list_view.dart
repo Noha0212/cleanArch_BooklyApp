@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bookly/Features/home/domain/entities/book_entity.dart';
+import 'package:bookly/Features/home/presentation/views/widgets/featured_list_view_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -92,7 +93,7 @@ class _FeaturedBooksListViewState extends State<FeaturedBooksListView> {
         } else if (state is FeaturedBooksFailure) {
           return Text(state.errMessag);
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return const FeaturedListViewLoading();
         }
       },
     );
